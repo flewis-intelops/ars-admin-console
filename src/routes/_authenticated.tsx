@@ -153,10 +153,7 @@ function Sidebar({ handler, sourcesCount }: { handler: Handler | null; sourcesCo
         >
           {handler?.unit ?? "—"}
         </div>
-        <div className="mt-2 flex flex-wrap gap-1">
-          <Pill tone="amber">{handler?.classification_clearance ?? "—"}</Pill>
-          <Pill tone="muted">{handler?.aor ?? "—"}</Pill>
-        </div>
+        {/* Clearance and AOR intentionally not shown — clearance is not modeled, AOR is per-source. */}
         <div className="mt-3 flex items-baseline gap-2">
           <span className="font-mono text-2xl text-white">{sourcesCount}</span>
           <span
