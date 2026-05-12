@@ -23,8 +23,8 @@ function RegisterSourcePage() {
     dob: "",
     id_document_type: "PASSPORT",
     id_document_number: "",
-    source_type: "recruited" as (typeof SOURCE_TYPES)[number],
-    aor: "AOR-NORTH",
+    source_type: "ci" as (typeof SOURCE_TYPES)[number],
+    aor: "Reynosa Sector",
     vetting_notes: "",
   });
   const [submitting, setSubmitting] = useState(false);
