@@ -45,7 +45,7 @@ function RegisterSourcePage() {
     setSubmitting(true);
     const { data, error } = await supabase.rpc("register_source", {
       p_true_name: form.true_name,
-      p_dob: form.dob || null,
+      p_dob: (form.dob || null) as unknown as string,
       p_id_document_type: form.id_document_type,
       p_id_document_number: form.id_document_number,
       p_source_type: form.source_type,

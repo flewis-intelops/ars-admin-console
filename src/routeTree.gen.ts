@@ -10,42 +10,72 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
+import { Route as AuthenticatedSourcesRouteImport } from './routes/_authenticated.sources'
+import { Route as AuthenticatedSourcesNewRouteImport } from './routes/_authenticated.sources.new'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSourcesRoute = AuthenticatedSourcesRouteImport.update({
+  id: '/sources',
+  path: '/sources',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSourcesNewRoute = AuthenticatedSourcesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AuthenticatedSourcesRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
+  '/sources': typeof AuthenticatedSourcesRouteWithChildren
+  '/sources/new': typeof AuthenticatedSourcesNewRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/sources': typeof AuthenticatedSourcesRouteWithChildren
+  '/': typeof AuthenticatedIndexRoute
+  '/sources/new': typeof AuthenticatedSourcesNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
+  '/_authenticated/sources': typeof AuthenticatedSourcesRouteWithChildren
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/sources/new': typeof AuthenticatedSourcesNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login'
+  fullPaths: '/' | '/login' | '/sources' | '/sources/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login'
-  id: '__root__' | '/' | '/login'
+  to: '/login' | '/sources' | '/' | '/sources/new'
+  id:
+    | '__root__'
+    | '/_authenticated'
+    | '/login'
+    | '/_authenticated/sources'
+    | '/_authenticated/'
+    | '/_authenticated/sources/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
 
@@ -58,20 +88,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/sources': {
+      id: '/_authenticated/sources'
+      path: '/sources'
+      fullPath: '/sources'
+      preLoaderRoute: typeof AuthenticatedSourcesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/sources/new': {
+      id: '/_authenticated/sources/new'
+      path: '/new'
+      fullPath: '/sources/new'
+      preLoaderRoute: typeof AuthenticatedSourcesNewRouteImport
+      parentRoute: typeof AuthenticatedSourcesRoute
     }
   }
 }
 
+interface AuthenticatedSourcesRouteChildren {
+  AuthenticatedSourcesNewRoute: typeof AuthenticatedSourcesNewRoute
+}
+
+const AuthenticatedSourcesRouteChildren: AuthenticatedSourcesRouteChildren = {
+  AuthenticatedSourcesNewRoute: AuthenticatedSourcesNewRoute,
+}
+
+const AuthenticatedSourcesRouteWithChildren =
+  AuthenticatedSourcesRoute._addFileChildren(AuthenticatedSourcesRouteChildren)
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedSourcesRoute: typeof AuthenticatedSourcesRouteWithChildren
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedSourcesRoute: AuthenticatedSourcesRouteWithChildren,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
