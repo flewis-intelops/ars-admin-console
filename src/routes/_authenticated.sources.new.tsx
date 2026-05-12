@@ -13,8 +13,8 @@ export const Route = createFileRoute("/_authenticated/sources/new")({
   component: RegisterSourcePage,
 });
 
-const SOURCE_TYPES = ["walk_in", "recruited", "volunteer", "liaison", "other"] as const;
-const AORS = ["AOR-NORTH", "AOR-SOUTH", "AOR-EAST", "AOR-WEST"];
+const SOURCE_TYPES = ["walk_in", "casual", "ci", "sub_source", "cooperating_defendant", "sensitive", "liaison"] as const;
+const AORS = ["Reynosa Sector", "Nuevo Laredo", "Monterrey Metro"];
 
 function RegisterSourcePage() {
   const navigate = useNavigate();
@@ -23,8 +23,8 @@ function RegisterSourcePage() {
     dob: "",
     id_document_type: "PASSPORT",
     id_document_number: "",
-    source_type: "recruited" as (typeof SOURCE_TYPES)[number],
-    aor: "AOR-NORTH",
+    source_type: "ci" as (typeof SOURCE_TYPES)[number],
+    aor: "Reynosa Sector",
     vetting_notes: "",
   });
   const [submitting, setSubmitting] = useState(false);

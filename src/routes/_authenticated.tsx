@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ClassificationBanner, CornerBrackets, Pill } from "@/components/ars/primitives";
+import { ClassificationBanner } from "@/components/ars/primitives";
 import {
   LayoutDashboard,
   Users,
@@ -153,10 +153,7 @@ function Sidebar({ handler, sourcesCount }: { handler: Handler | null; sourcesCo
         >
           {handler?.unit ?? "—"}
         </div>
-        <div className="mt-2 flex flex-wrap gap-1">
-          <Pill tone="amber">{handler?.classification_clearance ?? "—"}</Pill>
-          <Pill tone="muted">{handler?.aor ?? "—"}</Pill>
-        </div>
+        {/* Clearance and AOR intentionally not shown — clearance is not modeled, AOR is per-source. */}
         <div className="mt-3 flex items-baseline gap-2">
           <span className="font-mono text-2xl text-white">{sourcesCount}</span>
           <span
@@ -245,7 +242,7 @@ function TopHeader({ handler }: { handler: Handler | null }) {
         className="font-mono text-[10px] tracking-[0.22em]"
         style={{ color: "var(--amber-dim)" }}
       >
-        TF-OMEGA <span style={{ color: "var(--amber)" }}>›</span> {crumb}
+        {handler?.unit?.split(" / ")[0] ?? "TF-7"} <span style={{ color: "var(--amber)" }}>›</span> {crumb}
       </div>
       <div className="flex-1 max-w-md ml-6">
         <div
@@ -302,7 +299,7 @@ function Toolbar() {
         ))}
       </ToolbarGroup>
       <ToolbarGroup label="AOR">
-        {["ALL", "NORTH", "SOUTH", "EAST"].map((w) => (
+        {["ALL", "REYNOSA", "N. LAREDO", "MONTERREY"].map((w) => (
           <ToolbarChip key={w}>{w}</ToolbarChip>
         ))}
       </ToolbarGroup>

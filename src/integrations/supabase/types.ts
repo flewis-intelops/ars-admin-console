@@ -213,13 +213,15 @@ export type Database = {
     }
     Enums: {
       reliability_grade: "A" | "B" | "C" | "D" | "E" | "F"
-      source_status:
-        | "pending_vetting"
-        | "active"
-        | "dormant"
-        | "suspended"
-        | "terminated"
-      source_type: "walk_in" | "recruited" | "volunteer" | "liaison" | "other"
+      source_status: "pending_vetting" | "active" | "cold" | "terminated"
+      source_type:
+        | "walk_in"
+        | "casual"
+        | "ci"
+        | "sub_source"
+        | "cooperating_defendant"
+        | "sensitive"
+        | "liaison"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -348,14 +350,16 @@ export const Constants = {
   public: {
     Enums: {
       reliability_grade: ["A", "B", "C", "D", "E", "F"],
-      source_status: [
-        "pending_vetting",
-        "active",
-        "dormant",
-        "suspended",
-        "terminated",
+      source_status: ["pending_vetting", "active", "cold", "terminated"],
+      source_type: [
+        "walk_in",
+        "casual",
+        "ci",
+        "sub_source",
+        "cooperating_defendant",
+        "sensitive",
+        "liaison",
       ],
-      source_type: ["walk_in", "recruited", "volunteer", "liaison", "other"],
     },
   },
 } as const
