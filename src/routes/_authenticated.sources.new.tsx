@@ -13,8 +13,8 @@ export const Route = createFileRoute("/_authenticated/sources/new")({
   component: RegisterSourcePage,
 });
 
-const SOURCE_TYPES = ["walk_in", "recruited", "volunteer", "liaison", "other"] as const;
-const AORS = ["AOR-NORTH", "AOR-SOUTH", "AOR-EAST", "AOR-WEST"];
+const SOURCE_TYPES = ["walk_in", "casual", "ci", "sub_source", "cooperating_defendant", "sensitive", "liaison"] as const;
+const AORS = ["Reynosa Sector", "Nuevo Laredo", "Monterrey Metro"];
 
 function RegisterSourcePage() {
   const navigate = useNavigate();
