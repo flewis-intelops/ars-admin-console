@@ -266,6 +266,19 @@ function Dashboard() {
           </Panel>
         </div>
       </div>
+
+      <ComposeTaskingModal
+        open={composeOpen}
+        onOpenChange={setComposeOpen}
+        onIssued={loadTaskings}
+      />
+      <ValidationDrawer
+        report={activeReport}
+        onOpenChange={(v) => {
+          if (!v) setActiveReport(null);
+        }}
+        onDecision={loadReports}
+      />
     </div>
   );
 }
