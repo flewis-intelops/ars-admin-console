@@ -39,22 +39,31 @@ export const Route = createFileRoute("/_authenticated")({
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/login" });
   },
-  loader: async () => {
-    const { data: handler } = await supabase
-      .from("handlers")
-      .select("*")
-      .maybeSingle();
-    const { count } = await supabase
-      .from("sources_operational")
-      .select("*", { count: "exact", head: true });
-    return { handler: handler as Handler | null, sourcesCount: count ?? 0 };
-  },
   component: AuthenticatedShell,
 });
 
 function AuthenticatedShell() {
-  const { handler, sourcesCount } = Route.useLoaderData();
   const navigate = useNavigate();
+  const [handler, setHandler] = useState<Handler | null>(null);
+  const [sourcesCount, setSourcesCount] = useState<number>(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return;
+      const [{ data: h }, { count }] = await Promise.all([
+        supabase.from("handlers").select("*").eq("user_id", userData.user.id).maybeSingle(),
+        supabase.from("sources_operational").select("*", { count: "exact", head: true }),
+      ]);
+      if (cancelled) return;
+      setHandler((h ?? null) as Handler | null);
+      setSourcesCount(count ?? 0);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
