@@ -299,7 +299,7 @@ function Toolbar() {
         ))}
       </ToolbarGroup>
       <ToolbarGroup label="AOR">
-        {["ALL", "NORTH", "SOUTH", "EAST"].map((w) => (
+        {["ALL", "REYNOSA", "N. LAREDO", "MONTERREY"].map((w) => (
           <ToolbarChip key={w}>{w}</ToolbarChip>
         ))}
       </ToolbarGroup>
