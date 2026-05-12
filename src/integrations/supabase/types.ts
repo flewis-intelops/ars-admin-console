@@ -14,16 +14,212 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      handlers: {
+        Row: {
+          aor: string
+          callsign: string
+          classification_clearance: string
+          created_at: string
+          full_name: string
+          id: string
+          unit: string
+          user_id: string
+        }
+        Insert: {
+          aor: string
+          callsign: string
+          classification_clearance?: string
+          created_at?: string
+          full_name: string
+          id?: string
+          unit: string
+          user_id: string
+        }
+        Update: {
+          aor?: string
+          callsign?: string
+          classification_clearance?: string
+          created_at?: string
+          full_name?: string
+          id?: string
+          unit?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pairing_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string
+          handler_id: string
+          id: string
+          source_id: string
+          used_at: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at: string
+          handler_id: string
+          id?: string
+          source_id: string
+          used_at?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string
+          handler_id?: string
+          id?: string
+          source_id?: string
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pairing_codes_handler_id_fkey"
+            columns: ["handler_id"]
+            isOneToOne: false
+            referencedRelation: "handlers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pairing_codes_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources_operational"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      source_registry: {
+        Row: {
+          created_at: string
+          created_by: string
+          dob: string | null
+          id: string
+          id_document_number: string | null
+          id_document_type: string | null
+          true_name: string
+          vetting_notes: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          dob?: string | null
+          id?: string
+          id_document_number?: string | null
+          id_document_type?: string | null
+          true_name: string
+          vetting_notes?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          dob?: string | null
+          id?: string
+          id_document_number?: string | null
+          id_document_type?: string | null
+          true_name?: string
+          vetting_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "source_registry_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "handlers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sources_operational: {
+        Row: {
+          aor: string
+          created_at: string
+          handler_id: string
+          id: string
+          last_contact_at: string | null
+          pseudonym: string
+          registry_id: string
+          reliability: Database["public"]["Enums"]["reliability_grade"] | null
+          source_type: Database["public"]["Enums"]["source_type"]
+          status: Database["public"]["Enums"]["source_status"]
+        }
+        Insert: {
+          aor: string
+          created_at?: string
+          handler_id: string
+          id?: string
+          last_contact_at?: string | null
+          pseudonym: string
+          registry_id: string
+          reliability?: Database["public"]["Enums"]["reliability_grade"] | null
+          source_type: Database["public"]["Enums"]["source_type"]
+          status?: Database["public"]["Enums"]["source_status"]
+        }
+        Update: {
+          aor?: string
+          created_at?: string
+          handler_id?: string
+          id?: string
+          last_contact_at?: string | null
+          pseudonym?: string
+          registry_id?: string
+          reliability?: Database["public"]["Enums"]["reliability_grade"] | null
+          source_type?: Database["public"]["Enums"]["source_type"]
+          status?: Database["public"]["Enums"]["source_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sources_operational_handler_id_fkey"
+            columns: ["handler_id"]
+            isOneToOne: false
+            referencedRelation: "handlers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sources_operational_registry_id_fkey"
+            columns: ["registry_id"]
+            isOneToOne: true
+            referencedRelation: "source_registry"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_handler_id: { Args: never; Returns: string }
+      register_source: {
+        Args: {
+          p_aor: string
+          p_dob: string
+          p_id_document_number: string
+          p_id_document_type: string
+          p_source_type: Database["public"]["Enums"]["source_type"]
+          p_true_name: string
+          p_vetting_notes: string
+        }
+        Returns: {
+          code: string
+          expires_at: string
+          pseudonym: string
+          source_id: string
+        }[]
+      }
     }
     Enums: {
-      [_ in never]: never
+      reliability_grade: "A" | "B" | "C" | "D" | "E" | "F"
+      source_status:
+        | "pending_vetting"
+        | "active"
+        | "dormant"
+        | "suspended"
+        | "terminated"
+      source_type: "walk_in" | "recruited" | "volunteer" | "liaison" | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +346,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      reliability_grade: ["A", "B", "C", "D", "E", "F"],
+      source_status: [
+        "pending_vetting",
+        "active",
+        "dormant",
+        "suspended",
+        "terminated",
+      ],
+      source_type: ["walk_in", "recruited", "volunteer", "liaison", "other"],
+    },
   },
 } as const
