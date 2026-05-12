@@ -53,6 +53,55 @@ function Dashboard() {
       .then(({ data }) => setSources((data ?? []) as Source[]));
   }, []);
 
+  const loadTaskings = useCallback(() => {
+    supabase
+      .from("taskings")
+      .select("id, task_id_display, title, priority, pir, due_at, sources_operational(pseudonym)")
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(5)
+      .then(({ data }) => setTaskings((data ?? []) as unknown as TaskingRow[]));
+  }, []);
+
+  const loadReports = useCallback(() => {
+    supabase
+      .from("reports")
+      .select(
+        "id, report_id_display, category, confidence, submitted_at, sources_operational(pseudonym)",
+      )
+      .eq("validation_status", "pending_validation")
+      .order("submitted_at", { ascending: false })
+      .limit(5)
+      .then(({ data }) => setPendingReports((data ?? []) as unknown as ReportRow[]));
+  }, []);
+
+  useEffect(() => {
+    loadSources();
+    loadTaskings();
+    loadReports();
+    const i = setInterval(() => {
+      loadSources();
+      loadTaskings();
+      loadReports();
+    }, 5000);
+    return () => clearInterval(i);
+  }, [loadSources, loadTaskings, loadReports]);
+
+  const openReport = async (id: string) => {
+    const { data } = await supabase
+      .from("reports")
+      .select(
+        "id, report_id_display, submitted_at, category, sub_category, person_sex, person_age, person_build, person_features, mgrs, named_place, when_observed, activity, basis_of_knowledge, confidence, has_photo, has_voice, sources_operational(pseudonym)",
+      )
+      .eq("id", id)
+      .maybeSingle();
+    if (!data) return;
+    const d = data as unknown as Omit<ReportFull, "pseudonym"> & {
+      sources_operational: { pseudonym: string } | null;
+    };
+    setActiveReport({ ...d, pseudonym: d.sources_operational?.pseudonym ?? "—" });
+  };
+
   return (
     <div className="space-y-6">
       {/* KPI strip */}
