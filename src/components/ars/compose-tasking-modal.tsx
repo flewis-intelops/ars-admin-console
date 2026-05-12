@@ -65,8 +65,8 @@ export function ComposeTaskingModal({
       p_priority: priority,
       p_pir: pir,
       p_title: title.trim(),
-      p_body: body.trim() || null,
-      p_due_at: dueAt ? new Date(dueAt).toISOString() : null,
+      p_body: (body.trim() || null) as unknown as string,
+      p_due_at: (dueAt ? new Date(dueAt).toISOString() : null) as unknown as string,
     });
     setSubmitting(false);
     if (error) {
