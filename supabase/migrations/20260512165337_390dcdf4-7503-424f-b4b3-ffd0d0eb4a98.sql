@@ -1,0 +1,1 @@
+UPDATE public.handlers SET callsign = 'WALKER-3' WHERE full_name = 'MAJ Houston, R.';
