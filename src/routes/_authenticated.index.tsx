@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Panel, Pill } from "@/components/ars/primitives";
+import { Panel, Pill, SecondaryButton } from "@/components/ars/primitives";
+import { ComposeTaskingModal } from "@/components/ars/compose-tasking-modal";
+import { ValidationDrawer, type ReportFull } from "@/components/ars/validation-drawer";
 
 type Source = {
   id: string;
@@ -13,20 +15,92 @@ type Source = {
   last_contact_at: string | null;
 };
 
+type TaskingRow = {
+  id: string;
+  task_id_display: string;
+  title: string;
+  priority: string;
+  pir: string | null;
+  due_at: string | null;
+  sources_operational: { pseudonym: string } | null;
+};
+
+type ReportRow = {
+  id: string;
+  report_id_display: string;
+  category: string;
+  confidence: string;
+  submitted_at: string;
+  sources_operational: { pseudonym: string } | null;
+};
+
 export const Route = createFileRoute("/_authenticated/")({
   component: Dashboard,
 });
 
 function Dashboard() {
   const [sources, setSources] = useState<Source[]>([]);
+  const [taskings, setTaskings] = useState<TaskingRow[]>([]);
+  const [pendingReports, setPendingReports] = useState<ReportRow[]>([]);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [activeReport, setActiveReport] = useState<ReportFull | null>(null);
 
-  useEffect(() => {
+  const loadSources = useCallback(() => {
     supabase
       .from("sources_operational")
       .select("id,pseudonym,source_type,reliability,aor,status,last_contact_at")
       .order("last_contact_at", { ascending: false })
       .then(({ data }) => setSources((data ?? []) as Source[]));
   }, []);
+
+  const loadTaskings = useCallback(() => {
+    supabase
+      .from("taskings")
+      .select("id, task_id_display, title, priority, pir, due_at, sources_operational(pseudonym)")
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(5)
+      .then(({ data }) => setTaskings((data ?? []) as unknown as TaskingRow[]));
+  }, []);
+
+  const loadReports = useCallback(() => {
+    supabase
+      .from("reports")
+      .select(
+        "id, report_id_display, category, confidence, submitted_at, sources_operational(pseudonym)",
+      )
+      .eq("validation_status", "pending_validation")
+      .order("submitted_at", { ascending: false })
+      .limit(5)
+      .then(({ data }) => setPendingReports((data ?? []) as unknown as ReportRow[]));
+  }, []);
+
+  useEffect(() => {
+    loadSources();
+    loadTaskings();
+    loadReports();
+    const i = setInterval(() => {
+      loadSources();
+      loadTaskings();
+      loadReports();
+    }, 5000);
+    return () => clearInterval(i);
+  }, [loadSources, loadTaskings, loadReports]);
+
+  const openReport = async (id: string) => {
+    const { data } = await supabase
+      .from("reports")
+      .select(
+        "id, report_id_display, submitted_at, category, sub_category, person_sex, person_age, person_build, person_features, mgrs, named_place, when_observed, activity, basis_of_knowledge, confidence, has_photo, has_voice, sources_operational(pseudonym)",
+      )
+      .eq("id", id)
+      .maybeSingle();
+    if (!data) return;
+    const d = data as unknown as Omit<ReportFull, "pseudonym"> & {
+      sources_operational: { pseudonym: string } | null;
+    };
+    setActiveReport({ ...d, pseudonym: d.sources_operational?.pseudonym ?? "—" });
+  };
 
   return (
     <div className="space-y-6">
@@ -128,18 +202,51 @@ function Dashboard() {
             </ul>
           </Panel>
 
-          <Panel title="VALIDATION QUEUE" placeholder>
+          <Panel title="VALIDATION QUEUE">
             <div className="font-mono text-[11px] space-y-2">
-              <Row pseud="S-3892" note="Report #4471 awaiting peer review" />
-              <Row pseud="S-1156" note="Reliability re-grade due" />
-              <Row pseud="S-7421" note="ID corroboration pending" />
+              {pendingReports.length === 0 && (
+                <div className="text-white/40 text-center py-2">No reports pending.</div>
+              )}
+              {pendingReports.map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => openReport(r.id)}
+                  className="w-full flex justify-between gap-3 hover:bg-white/[0.03] px-1 py-1 text-left"
+                >
+                  <span style={{ color: "var(--amber)" }}>
+                    {r.sources_operational?.pseudonym ?? "—"}
+                  </span>
+                  <span className="text-white/60 text-right">
+                    {r.report_id_display} · {r.category.toUpperCase()} · {r.confidence.toUpperCase()}
+                  </span>
+                </button>
+              ))}
             </div>
           </Panel>
 
-          <Panel title="ACTIVE TASKINGS" placeholder>
-            <div className="font-mono text-[11px] space-y-2">
-              <Row pseud="S-7421" note="TASK-2031 · meet at SITE-B" />
-              <Row pseud="S-3892" note="TASK-2034 · photo collection" />
+          <Panel title="ACTIVE TASKINGS">
+            <div className="space-y-3">
+              <div className="flex justify-end">
+                <SecondaryButton onClick={() => setComposeOpen(true)} className="!py-1 !px-3">
+                  + ISSUE TASKING
+                </SecondaryButton>
+              </div>
+              <div className="font-mono text-[11px] space-y-2">
+                {taskings.length === 0 && (
+                  <div className="text-white/40 text-center py-2">No active taskings.</div>
+                )}
+                {taskings.map((t) => (
+                  <div key={t.id} className="flex justify-between gap-3">
+                    <span style={{ color: "var(--amber)" }}>
+                      {t.sources_operational?.pseudonym ?? "—"}
+                    </span>
+                    <span className="text-white/60 text-right">
+                      {t.task_id_display} ·{" "}
+                      {t.title.length > 40 ? t.title.slice(0, 40) + "…" : t.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </Panel>
 
@@ -159,6 +266,19 @@ function Dashboard() {
           </Panel>
         </div>
       </div>
+
+      <ComposeTaskingModal
+        open={composeOpen}
+        onOpenChange={setComposeOpen}
+        onIssued={loadTaskings}
+      />
+      <ValidationDrawer
+        report={activeReport}
+        onOpenChange={(v) => {
+          if (!v) setActiveReport(null);
+        }}
+        onDecision={loadReports}
+      />
     </div>
   );
 }

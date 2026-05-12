@@ -92,6 +92,119 @@ export type Database = {
           },
         ]
       }
+      reports: {
+        Row: {
+          activity: string | null
+          basis_of_knowledge: string
+          category: string
+          confidence: string
+          handler_id: string
+          has_photo: boolean | null
+          has_voice: boolean | null
+          id: string
+          location_offset_m: number | null
+          mgrs: string | null
+          named_place: string | null
+          person_age: string | null
+          person_build: string | null
+          person_features: string | null
+          person_sex: string | null
+          report_id_display: string
+          source_id: string
+          sub_category: string | null
+          submitted_at: string
+          tasking_id: string | null
+          validated_at: string | null
+          validated_by_handler_id: string | null
+          validation_notes: string | null
+          validation_status: string
+          when_observed: string | null
+        }
+        Insert: {
+          activity?: string | null
+          basis_of_knowledge: string
+          category: string
+          confidence: string
+          handler_id: string
+          has_photo?: boolean | null
+          has_voice?: boolean | null
+          id?: string
+          location_offset_m?: number | null
+          mgrs?: string | null
+          named_place?: string | null
+          person_age?: string | null
+          person_build?: string | null
+          person_features?: string | null
+          person_sex?: string | null
+          report_id_display: string
+          source_id: string
+          sub_category?: string | null
+          submitted_at?: string
+          tasking_id?: string | null
+          validated_at?: string | null
+          validated_by_handler_id?: string | null
+          validation_notes?: string | null
+          validation_status?: string
+          when_observed?: string | null
+        }
+        Update: {
+          activity?: string | null
+          basis_of_knowledge?: string
+          category?: string
+          confidence?: string
+          handler_id?: string
+          has_photo?: boolean | null
+          has_voice?: boolean | null
+          id?: string
+          location_offset_m?: number | null
+          mgrs?: string | null
+          named_place?: string | null
+          person_age?: string | null
+          person_build?: string | null
+          person_features?: string | null
+          person_sex?: string | null
+          report_id_display?: string
+          source_id?: string
+          sub_category?: string | null
+          submitted_at?: string
+          tasking_id?: string | null
+          validated_at?: string | null
+          validated_by_handler_id?: string | null
+          validation_notes?: string | null
+          validation_status?: string
+          when_observed?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_handler_id_fkey"
+            columns: ["handler_id"]
+            isOneToOne: false
+            referencedRelation: "handlers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources_operational"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_tasking_id_fkey"
+            columns: ["tasking_id"]
+            isOneToOne: false
+            referencedRelation: "taskings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_validated_by_handler_id_fkey"
+            columns: ["validated_by_handler_id"]
+            isOneToOne: false
+            referencedRelation: "handlers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       source_registry: {
         Row: {
           created_at: string
@@ -187,12 +300,95 @@ export type Database = {
           },
         ]
       }
+      taskings: {
+        Row: {
+          body: string | null
+          created_at: string
+          due_at: string | null
+          handler_id: string
+          id: string
+          is_new: boolean
+          pir: string | null
+          priority: string
+          source_id: string
+          status: string
+          task_id_display: string
+          title: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          due_at?: string | null
+          handler_id: string
+          id?: string
+          is_new?: boolean
+          pir?: string | null
+          priority: string
+          source_id: string
+          status?: string
+          task_id_display: string
+          title: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          due_at?: string | null
+          handler_id?: string
+          id?: string
+          is_new?: boolean
+          pir?: string | null
+          priority?: string
+          source_id?: string
+          status?: string
+          task_id_display?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "taskings_handler_id_fkey"
+            columns: ["handler_id"]
+            isOneToOne: false
+            referencedRelation: "handlers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "taskings_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources_operational"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       current_handler_id: { Args: never; Returns: string }
+      issue_tasking: {
+        Args: {
+          p_body: string
+          p_due_at: string
+          p_pir: string
+          p_priority: string
+          p_source_pseudonym: string
+          p_title: string
+        }
+        Returns: {
+          task_id_display: string
+          tasking_id: string
+        }[]
+      }
+      mobile_demo_login: {
+        Args: { p_pseudonym: string }
+        Returns: {
+          aor: string
+          handler_callsign: string
+          pseudonym: string
+          source_id: string
+        }[]
+      }
       register_source: {
         Args: {
           p_aor: string
@@ -209,6 +405,33 @@ export type Database = {
           pseudonym: string
           source_id: string
         }[]
+      }
+      submit_report: {
+        Args: {
+          p_activity: string
+          p_basis_of_knowledge: string
+          p_category: string
+          p_confidence: string
+          p_has_photo: boolean
+          p_has_voice: boolean
+          p_mgrs: string
+          p_named_place: string
+          p_person_age: string
+          p_person_build: string
+          p_person_features: string
+          p_person_sex: string
+          p_source_pseudonym: string
+          p_sub_category: string
+          p_when_observed: string
+        }
+        Returns: {
+          report_id: string
+          report_id_display: string
+        }[]
+      }
+      validate_report: {
+        Args: { p_decision: string; p_notes: string; p_report_id: string }
+        Returns: undefined
       }
     }
     Enums: {
