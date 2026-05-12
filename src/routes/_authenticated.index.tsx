@@ -30,13 +30,13 @@ function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* KPI strip — placeholder */}
+      {/* KPI strip */}
       <div className="grid grid-cols-5 gap-4">
-        <Kpi label="ACTIVE SOURCES" value={String(sources.length || "—")} live />
-        <Kpi label="REPORTS / 24H" value="47" delta="+12" />
-        <Kpi label="VALIDATION QUEUE" value="9" delta="+3" tone="orange" />
-        <Kpi label="ACTIVE TASKINGS" value="14" />
-        <Kpi label="FORCE PROT ALERTS" value="2" tone="red" />
+        <Kpi label="PENDING VALIDATION" value="9" delta="+3" tone="orange" />
+        <Kpi label="PIR COVERAGE" value="62%" delta="+4%" />
+        <Kpi label="ACTIVE SOURCES" value={String(sources.length)} live />
+        <Kpi label="TIME-TO-REPORT" value="38m" delta="-6m" />
+        <Kpi label="CORROBORATION · 7D" value="71%" delta="+2%" />
       </div>
 
       <div className="grid grid-cols-3 gap-4">
