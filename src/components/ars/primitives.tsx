@@ -18,7 +18,7 @@ export function ClassificationBanner({ position = "top" }: { position?: "top" | 
 export function CornerBrackets({
   children,
   className = "",
-  size = 10,
+  size = 8,
 }: {
   children: React.ReactNode;
   className?: string;
