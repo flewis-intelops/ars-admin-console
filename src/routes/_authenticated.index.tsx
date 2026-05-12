@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Panel, Pill } from "@/components/ars/primitives";
+import { Panel, Pill, SecondaryButton } from "@/components/ars/primitives";
+import { ComposeTaskingModal } from "@/components/ars/compose-tasking-modal";
+import { ValidationDrawer, type ReportFull } from "@/components/ars/validation-drawer";
 
 type Source = {
   id: string;
@@ -13,14 +15,37 @@ type Source = {
   last_contact_at: string | null;
 };
 
+type TaskingRow = {
+  id: string;
+  task_id_display: string;
+  title: string;
+  priority: string;
+  pir: string | null;
+  due_at: string | null;
+  sources_operational: { pseudonym: string } | null;
+};
+
+type ReportRow = {
+  id: string;
+  report_id_display: string;
+  category: string;
+  confidence: string;
+  submitted_at: string;
+  sources_operational: { pseudonym: string } | null;
+};
+
 export const Route = createFileRoute("/_authenticated/")({
   component: Dashboard,
 });
 
 function Dashboard() {
   const [sources, setSources] = useState<Source[]>([]);
+  const [taskings, setTaskings] = useState<TaskingRow[]>([]);
+  const [pendingReports, setPendingReports] = useState<ReportRow[]>([]);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [activeReport, setActiveReport] = useState<ReportFull | null>(null);
 
-  useEffect(() => {
+  const loadSources = useCallback(() => {
     supabase
       .from("sources_operational")
       .select("id,pseudonym,source_type,reliability,aor,status,last_contact_at")
