@@ -242,7 +242,7 @@ function TopHeader({ handler }: { handler: Handler | null }) {
         className="font-mono text-[10px] tracking-[0.22em]"
         style={{ color: "var(--amber-dim)" }}
       >
-        TF-OMEGA <span style={{ color: "var(--amber)" }}>›</span> {crumb}
+        {handler?.unit?.split(" / ")[0] ?? "TF-7"} <span style={{ color: "var(--amber)" }}>›</span> {crumb}
       </div>
       <div className="flex-1 max-w-md ml-6">
         <div
