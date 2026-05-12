@@ -15,7 +15,7 @@ type Source = {
   created_at: string;
 };
 
-export const Route = createFileRoute("/_authenticated/sources")({
+export const Route = createFileRoute("/_authenticated/sources/")({
   component: SourcesPage,
 });
 
