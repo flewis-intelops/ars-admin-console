@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ClassificationBanner, CornerBrackets, Pill } from "@/components/ars/primitives";
+import { ClassificationBanner } from "@/components/ars/primitives";
 import {
   LayoutDashboard,
   Users,
