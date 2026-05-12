@@ -202,18 +202,51 @@ function Dashboard() {
             </ul>
           </Panel>
 
-          <Panel title="VALIDATION QUEUE" placeholder>
+          <Panel title="VALIDATION QUEUE">
             <div className="font-mono text-[11px] space-y-2">
-              <Row pseud="S-3892" note="Report #4471 awaiting peer review" />
-              <Row pseud="S-1156" note="Reliability re-grade due" />
-              <Row pseud="S-7421" note="ID corroboration pending" />
+              {pendingReports.length === 0 && (
+                <div className="text-white/40 text-center py-2">No reports pending.</div>
+              )}
+              {pendingReports.map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => openReport(r.id)}
+                  className="w-full flex justify-between gap-3 hover:bg-white/[0.03] px-1 py-1 text-left"
+                >
+                  <span style={{ color: "var(--amber)" }}>
+                    {r.sources_operational?.pseudonym ?? "—"}
+                  </span>
+                  <span className="text-white/60 text-right">
+                    {r.report_id_display} · {r.category.toUpperCase()} · {r.confidence.toUpperCase()}
+                  </span>
+                </button>
+              ))}
             </div>
           </Panel>
 
-          <Panel title="ACTIVE TASKINGS" placeholder>
-            <div className="font-mono text-[11px] space-y-2">
-              <Row pseud="S-7421" note="TASK-2031 · meet at SITE-B" />
-              <Row pseud="S-3892" note="TASK-2034 · photo collection" />
+          <Panel title="ACTIVE TASKINGS">
+            <div className="space-y-3">
+              <div className="flex justify-end">
+                <SecondaryButton onClick={() => setComposeOpen(true)} className="!py-1 !px-3">
+                  + ISSUE TASKING
+                </SecondaryButton>
+              </div>
+              <div className="font-mono text-[11px] space-y-2">
+                {taskings.length === 0 && (
+                  <div className="text-white/40 text-center py-2">No active taskings.</div>
+                )}
+                {taskings.map((t) => (
+                  <div key={t.id} className="flex justify-between gap-3">
+                    <span style={{ color: "var(--amber)" }}>
+                      {t.sources_operational?.pseudonym ?? "—"}
+                    </span>
+                    <span className="text-white/60 text-right">
+                      {t.task_id_display} ·{" "}
+                      {t.title.length > 40 ? t.title.slice(0, 40) + "…" : t.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </Panel>
 
