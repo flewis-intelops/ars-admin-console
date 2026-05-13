@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { statusTone } from "@/lib/utils";
 import { Panel, Pill, PrimaryButton, SectionLabel } from "@/components/ars/primitives";
 import { X } from "lucide-react";
 
@@ -74,17 +75,7 @@ function SourcesPage() {
                 </td>
                 <td className="px-3 py-3 text-white/70">{s.aor}</td>
                 <td className="px-3 py-3">
-                  <Pill
-                    tone={
-                      s.status === "active"
-                        ? "green"
-                        : s.status === "pending_vetting"
-                          ? "orange"
-                          : s.status === "dormant"
-                            ? "muted"
-                            : "red"
-                    }
-                  >
+                  <Pill tone={statusTone(s.status)}>
                     {s.status.replace("_", " ")}
                   </Pill>
                 </td>

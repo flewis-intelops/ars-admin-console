@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { statusTone } from "@/lib/utils";
 import { Panel, Pill, SecondaryButton } from "@/components/ars/primitives";
 import { ComposeTaskingModal } from "@/components/ars/compose-tasking-modal";
 import { ValidationDrawer, type ReportFull } from "@/components/ars/validation-drawer";
@@ -325,17 +326,7 @@ function ReliabilityBadge({ grade }: { grade: string | null }) {
 }
 
 function StatusPill({ status }: { status: string }) {
-  const tone =
-    status === "active"
-      ? "green"
-      : status === "dormant"
-        ? "muted"
-        : status === "pending_vetting"
-          ? "orange"
-          : status === "suspended" || status === "terminated"
-            ? "red"
-            : "amber";
-  return <Pill tone={tone as never}>{status.replace("_", " ")}</Pill>;
+  return <Pill tone={statusTone(status)}>{status.replace("_", " ")}</Pill>;
 }
 
 function Row({ pseud, note }: { pseud: string; note: string }) {
