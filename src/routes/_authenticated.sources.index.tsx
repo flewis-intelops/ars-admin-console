@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { statusTone } from "@/lib/utils";
 import { Panel, Pill, PrimaryButton, SectionLabel } from "@/components/ars/primitives";
@@ -24,13 +24,19 @@ function SourcesPage() {
   const [rows, setRows] = useState<Source[]>([]);
   const [selected, setSelected] = useState<Source | null>(null);
 
-  useEffect(() => {
+  const loadSources = useCallback(() => {
     supabase
       .from("sources_operational")
       .select("*")
       .order("last_contact_at", { ascending: false })
       .then(({ data }) => setRows((data ?? []) as Source[]));
   }, []);
+
+  useEffect(() => {
+    loadSources();
+    const i = setInterval(loadSources, 5000);
+    return () => clearInterval(i);
+  }, [loadSources]);
 
   return (
     <div>
