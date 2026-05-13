@@ -50,7 +50,7 @@ function LoginPage() {
                 className="font-display text-3xl font-semibold tracking-[0.4em]"
                 style={{ color: "var(--amber)" }}
               >
-                ARS
+                HARS
               </div>
               <div
                 className="font-mono text-[9px] tracking-[0.22em] mt-1"

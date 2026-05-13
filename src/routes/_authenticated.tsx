@@ -226,7 +226,7 @@ function Sidebar({ handler, sourcesCount }: { handler: Handler | null; sourcesCo
         className="p-3 font-mono text-[9px] tracking-[0.18em]"
         style={{ borderTop: "1px solid var(--hairline)", color: "var(--amber-dim)" }}
       >
-        ARS v0.1 · POC BUILD
+        HARS v0.1 · POC BUILD
       </div>
     </aside>
   );
