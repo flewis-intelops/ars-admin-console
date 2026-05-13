@@ -256,20 +256,24 @@ function TopHeader({ handler }: { handler: Handler | null }) {
       <div className="flex-1 max-w-md ml-6">
         <div
           className="flex items-center gap-2 px-3 py-1.5"
-          style={{ border: "1px solid var(--hairline)", backgroundColor: "var(--bg)" }}
+          style={{ border: "1px solid var(--hairline)", backgroundColor: "var(--bg)", opacity: 0.5, cursor: "not-allowed" }}
+          title="Coming in v0.3"
         >
           <Search size={12} strokeWidth={1.5} style={{ color: "var(--amber-dim)" }} />
           <input
+            disabled
+            title="Coming in v0.3"
             placeholder="SEARCH PSEUDONYM, AOR, PIR…"
-            className="bg-transparent outline-none font-mono text-[11px] tracking-[0.1em] flex-1 text-white/80 placeholder:text-white/30"
+            className="bg-transparent outline-none font-mono text-[11px] tracking-[0.1em] flex-1 text-white/80 placeholder:text-white/30 cursor-not-allowed"
           />
         </div>
       </div>
       <div className="ml-auto flex items-center gap-3">
         <button
-          className="relative p-2"
-          title="Force protection alerts"
-          style={{ border: "1px solid var(--hairline)" }}
+          disabled
+          className="relative p-2 cursor-not-allowed"
+          title="Coming in v0.3"
+          style={{ border: "1px solid var(--hairline)", opacity: 0.5 }}
         >
           <Bell size={14} strokeWidth={1.5} style={{ color: "var(--amber)" }} />
           <span
@@ -300,35 +304,43 @@ function Toolbar() {
       className="flex items-center gap-3 px-6 py-2"
       style={{ backgroundColor: "var(--bg)", borderBottom: "1px solid var(--hairline)" }}
     >
-      <ToolbarGroup label="TIME">
-        {["6H", "24H", "7D", "30D"].map((w) => (
-          <ToolbarChip key={w} active={tw === w} onClick={() => setTw(w)}>
-            {w}
-          </ToolbarChip>
-        ))}
-      </ToolbarGroup>
-      <ToolbarGroup label="AOR">
-        {["ALL", "REYNOSA", "N. LAREDO", "MONTERREY"].map((w) => (
-          <ToolbarChip key={w}>{w}</ToolbarChip>
-        ))}
-      </ToolbarGroup>
-      <ToolbarGroup label="PIR">
-        {["ALL", "PIR-1", "PIR-2", "PIR-3"].map((w) => (
-          <ToolbarChip key={w}>{w}</ToolbarChip>
-        ))}
-      </ToolbarGroup>
+      <div style={{ opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }} title="Coming in v0.3">
+        <ToolbarGroup label="TIME">
+          {["6H", "24H", "7D", "30D"].map((w) => (
+            <ToolbarChip key={w} active={tw === w} onClick={() => setTw(w)}>
+              {w}
+            </ToolbarChip>
+          ))}
+        </ToolbarGroup>
+      </div>
+      <div style={{ opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }} title="Coming in v0.3">
+        <ToolbarGroup label="AOR">
+          {["ALL", "REYNOSA", "N. LAREDO", "MONTERREY"].map((w) => (
+            <ToolbarChip key={w}>{w}</ToolbarChip>
+          ))}
+        </ToolbarGroup>
+      </div>
+      <div style={{ opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }} title="Coming in v0.3">
+        <ToolbarGroup label="PIR">
+          {["ALL", "PIR-1", "PIR-2", "PIR-3"].map((w) => (
+            <ToolbarChip key={w}>{w}</ToolbarChip>
+          ))}
+        </ToolbarGroup>
+      </div>
       <div className="ml-auto flex items-center gap-2">
         <button
-          className="p-2"
-          style={{ border: "1px solid var(--hairline)", color: "var(--amber)" }}
-          title="Refresh"
+          disabled
+          className="p-2 cursor-not-allowed"
+          style={{ border: "1px solid var(--hairline)", color: "var(--amber)", opacity: 0.5 }}
+          title="Coming in v0.3"
         >
           <RefreshCw size={12} strokeWidth={1.5} />
         </button>
         <button
-          className="p-2"
-          style={{ border: "1px solid var(--hairline)", color: "var(--amber)" }}
-          title="Export"
+          disabled
+          className="p-2 cursor-not-allowed"
+          style={{ border: "1px solid var(--hairline)", color: "var(--amber)", opacity: 0.5 }}
+          title="Coming in v0.3"
         >
           <Download size={12} strokeWidth={1.5} />
         </button>
