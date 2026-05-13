@@ -43,26 +43,31 @@ function RegisterSourcePage() {
     e.preventDefault();
     setErr(null);
     setSubmitting(true);
-    const { data, error } = await supabase.rpc("register_source", {
-      p_true_name: form.true_name,
-      p_dob: (form.dob || null) as unknown as string,
-      p_id_document_type: form.id_document_type,
-      p_id_document_number: form.id_document_number,
-      p_source_type: form.source_type,
-      p_aor: form.aor,
-      p_vetting_notes: form.vetting_notes,
-    });
-    setSubmitting(false);
-    if (error) {
-      if (error.message.includes("PseudonymSpaceExhausted"))
-        setErr("Pseudonym space exhausted — contact admin.");
-      else if (error.message.includes("NotAHandler"))
-        setErr("Account is not a registered handler.");
-      else setErr(error.message);
-      return;
+    try {
+      const { data, error } = await supabase.rpc("register_source", {
+        p_true_name: form.true_name,
+        p_dob: (form.dob || null) as unknown as string,
+        p_id_document_type: form.id_document_type,
+        p_id_document_number: form.id_document_number,
+        p_source_type: form.source_type,
+        p_aor: form.aor,
+        p_vetting_notes: form.vetting_notes,
+      });
+      if (error) {
+        if (error.message.includes("PseudonymSpaceExhausted"))
+          setErr("Pseudonym space exhausted — contact admin.");
+        else if (error.message.includes("NotAHandler"))
+          setErr("Account is not a registered handler.");
+        else setErr(error.message);
+        return;
+      }
+      const row = (data as Array<{ source_id: string; pseudonym: string; code: string; expires_at: string }>)?.[0];
+      if (row) setResult({ pseudonym: row.pseudonym, code: row.code, expires_at: row.expires_at });
+    } catch (e) {
+      setErr(`Network error: ${e instanceof Error ? e.message : "unknown"}`);
+    } finally {
+      setSubmitting(false);
     }
-    const row = (data as Array<{ source_id: string; pseudonym: string; code: string; expires_at: string }>)?.[0];
-    if (row) setResult({ pseudonym: row.pseudonym, code: row.code, expires_at: row.expires_at });
   }
 
   return (
