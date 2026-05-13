@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { PrimaryButton, SecondaryButton, SectionLabel, Pill } from "./primitives";
 import { toast } from "sonner";
 
+const DEMO_MGRS = "14R PU 64829 53117";
+
 export type ReportFull = {
   id: string;
   report_id_display: string;
@@ -110,7 +112,14 @@ export function ValidationDrawer({
                     >
                       {k}
                     </div>
-                    <div className="text-white/85">{v}</div>
+                    <div className="text-white/85">
+                      {v}
+                      {k === "MGRS" && v === DEMO_MGRS && (
+                        <span className="ml-2 inline-block">
+                          <Pill tone="muted">DEMO MOCK</Pill>
+                        </span>
+                      )}
+                    </div>
                   </div>
                 ))}
             </div>
