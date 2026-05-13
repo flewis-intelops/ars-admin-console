@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { statusTone } from "@/lib/utils";
 import { Panel, Pill, SecondaryButton } from "@/components/ars/primitives";
@@ -45,6 +46,7 @@ function Dashboard() {
   const [pendingReports, setPendingReports] = useState<ReportRow[]>([]);
   const [composeOpen, setComposeOpen] = useState(false);
   const [activeReport, setActiveReport] = useState<ReportFull | null>(null);
+  const [reportsLoaded, setReportsLoaded] = useState(false);
 
   const loadSources = useCallback(() => {
     supabase
@@ -73,8 +75,22 @@ function Dashboard() {
       .eq("validation_status", "pending_validation")
       .order("submitted_at", { ascending: false })
       .limit(5)
-      .then(({ data }) => setPendingReports((data ?? []) as unknown as ReportRow[]));
+      .then(({ data }) => {
+        setPendingReports((data ?? []) as unknown as ReportRow[]);
+        setReportsLoaded(true);
+      });
   }, []);
+
+  useEffect(() => {
+    if (!activeReport || !reportsLoaded) return;
+    const stillPending = pendingReports.some((r) => r.id === activeReport.id);
+    if (!stillPending) {
+      toast.info(
+        `Report ${activeReport.report_id_display} no longer pending — it was validated, rejected, or put on hold elsewhere.`,
+      );
+      setActiveReport(null);
+    }
+  }, [pendingReports, activeReport, reportsLoaded]);
 
   useEffect(() => {
     loadSources();
