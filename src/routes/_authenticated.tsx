@@ -256,20 +256,24 @@ function TopHeader({ handler }: { handler: Handler | null }) {
       <div className="flex-1 max-w-md ml-6">
         <div
           className="flex items-center gap-2 px-3 py-1.5"
-          style={{ border: "1px solid var(--hairline)", backgroundColor: "var(--bg)" }}
+          style={{ border: "1px solid var(--hairline)", backgroundColor: "var(--bg)", opacity: 0.5, cursor: "not-allowed" }}
+          title="Coming in v0.3"
         >
           <Search size={12} strokeWidth={1.5} style={{ color: "var(--amber-dim)" }} />
           <input
+            disabled
+            title="Coming in v0.3"
             placeholder="SEARCH PSEUDONYM, AOR, PIR…"
-            className="bg-transparent outline-none font-mono text-[11px] tracking-[0.1em] flex-1 text-white/80 placeholder:text-white/30"
+            className="bg-transparent outline-none font-mono text-[11px] tracking-[0.1em] flex-1 text-white/80 placeholder:text-white/30 cursor-not-allowed"
           />
         </div>
       </div>
       <div className="ml-auto flex items-center gap-3">
         <button
-          className="relative p-2"
-          title="Force protection alerts"
-          style={{ border: "1px solid var(--hairline)" }}
+          disabled
+          className="relative p-2 cursor-not-allowed"
+          title="Coming in v0.3"
+          style={{ border: "1px solid var(--hairline)", opacity: 0.5 }}
         >
           <Bell size={14} strokeWidth={1.5} style={{ color: "var(--amber)" }} />
           <span
