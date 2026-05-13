@@ -60,24 +60,29 @@ export function ComposeTaskingModal({
       return;
     }
     setSubmitting(true);
-    const { data, error } = await supabase.rpc("issue_tasking", {
-      p_source_pseudonym: pseudonym,
-      p_priority: priority,
-      p_pir: pir,
-      p_title: title.trim(),
-      p_body: (body.trim() || null) as unknown as string,
-      p_due_at: (dueAt ? new Date(dueAt).toISOString() : null) as unknown as string,
-    });
-    setSubmitting(false);
-    if (error) {
-      toast.error(error.message);
-      return;
+    try {
+      const { data, error } = await supabase.rpc("issue_tasking", {
+        p_source_pseudonym: pseudonym,
+        p_priority: priority,
+        p_pir: pir,
+        p_title: title.trim(),
+        p_body: (body.trim() || null) as unknown as string,
+        p_due_at: (dueAt ? new Date(dueAt).toISOString() : null) as unknown as string,
+      });
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      const display = data?.[0]?.task_id_display;
+      toast.success(`Tasking ${display} issued to ${pseudonym}`);
+      reset();
+      onOpenChange(false);
+      onIssued();
+    } catch (e) {
+      toast.error(`Network error: ${e instanceof Error ? e.message : "unknown"}`);
+    } finally {
+      setSubmitting(false);
     }
-    const display = data?.[0]?.task_id_display;
-    toast.success(`Tasking ${display} issued to ${pseudonym}`);
-    reset();
-    onOpenChange(false);
-    onIssued();
   };
 
   const inputStyle = {
