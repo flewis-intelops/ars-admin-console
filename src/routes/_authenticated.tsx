@@ -304,35 +304,43 @@ function Toolbar() {
       className="flex items-center gap-3 px-6 py-2"
       style={{ backgroundColor: "var(--bg)", borderBottom: "1px solid var(--hairline)" }}
     >
-      <ToolbarGroup label="TIME">
-        {["6H", "24H", "7D", "30D"].map((w) => (
-          <ToolbarChip key={w} active={tw === w} onClick={() => setTw(w)}>
-            {w}
-          </ToolbarChip>
-        ))}
-      </ToolbarGroup>
-      <ToolbarGroup label="AOR">
-        {["ALL", "REYNOSA", "N. LAREDO", "MONTERREY"].map((w) => (
-          <ToolbarChip key={w}>{w}</ToolbarChip>
-        ))}
-      </ToolbarGroup>
-      <ToolbarGroup label="PIR">
-        {["ALL", "PIR-1", "PIR-2", "PIR-3"].map((w) => (
-          <ToolbarChip key={w}>{w}</ToolbarChip>
-        ))}
-      </ToolbarGroup>
+      <div style={{ opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }} title="Coming in v0.3">
+        <ToolbarGroup label="TIME">
+          {["6H", "24H", "7D", "30D"].map((w) => (
+            <ToolbarChip key={w} active={tw === w} onClick={() => setTw(w)}>
+              {w}
+            </ToolbarChip>
+          ))}
+        </ToolbarGroup>
+      </div>
+      <div style={{ opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }} title="Coming in v0.3">
+        <ToolbarGroup label="AOR">
+          {["ALL", "REYNOSA", "N. LAREDO", "MONTERREY"].map((w) => (
+            <ToolbarChip key={w}>{w}</ToolbarChip>
+          ))}
+        </ToolbarGroup>
+      </div>
+      <div style={{ opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }} title="Coming in v0.3">
+        <ToolbarGroup label="PIR">
+          {["ALL", "PIR-1", "PIR-2", "PIR-3"].map((w) => (
+            <ToolbarChip key={w}>{w}</ToolbarChip>
+          ))}
+        </ToolbarGroup>
+      </div>
       <div className="ml-auto flex items-center gap-2">
         <button
-          className="p-2"
-          style={{ border: "1px solid var(--hairline)", color: "var(--amber)" }}
-          title="Refresh"
+          disabled
+          className="p-2 cursor-not-allowed"
+          style={{ border: "1px solid var(--hairline)", color: "var(--amber)", opacity: 0.5 }}
+          title="Coming in v0.3"
         >
           <RefreshCw size={12} strokeWidth={1.5} />
         </button>
         <button
-          className="p-2"
-          style={{ border: "1px solid var(--hairline)", color: "var(--amber)" }}
-          title="Export"
+          disabled
+          className="p-2 cursor-not-allowed"
+          style={{ border: "1px solid var(--hairline)", color: "var(--amber)", opacity: 0.5 }}
+          title="Coming in v0.3"
         >
           <Download size={12} strokeWidth={1.5} />
         </button>
