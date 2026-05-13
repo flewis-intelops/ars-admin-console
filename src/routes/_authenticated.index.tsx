@@ -105,18 +105,34 @@ function Dashboard() {
   }, [loadSources, loadTaskings, loadReports]);
 
   const openReport = async (id: string) => {
-    const { data } = await supabase
-      .from("reports")
-      .select(
-        "id, report_id_display, submitted_at, category, sub_category, person_sex, person_age, person_build, person_features, mgrs, named_place, when_observed, activity, basis_of_knowledge, confidence, has_photo, has_voice, sources_operational(pseudonym)",
-      )
-      .eq("id", id)
-      .maybeSingle();
-    if (!data) return;
-    const d = data as unknown as Omit<ReportFull, "pseudonym"> & {
-      sources_operational: { pseudonym: string } | null;
-    };
-    setActiveReport({ ...d, pseudonym: d.sources_operational?.pseudonym ?? "—" });
+    try {
+      const { data, error } = await supabase
+        .from("reports")
+        .select(
+          "id, report_id_display, submitted_at, category, sub_category, person_sex, person_age, person_build, person_features, mgrs, named_place, when_observed, activity, basis_of_knowledge, confidence, has_photo, has_voice, sources_operational(pseudonym)",
+        )
+        .eq("id", id)
+        .maybeSingle();
+      if (error) {
+        toast.error(`Couldn't open report: ${error.message}`);
+        return;
+      }
+      if (!data) {
+        toast.info(
+          "That report is no longer pending — it was just validated, rejected, or put on hold. Refreshing queue.",
+        );
+        loadReports();
+        return;
+      }
+      const d = data as unknown as Omit<ReportFull, "pseudonym"> & {
+        sources_operational: { pseudonym: string } | null;
+      };
+      setActiveReport({ ...d, pseudonym: d.sources_operational?.pseudonym ?? "—" });
+    } catch (e) {
+      toast.error(
+        `Couldn't open report: ${e instanceof Error ? e.message : "unknown error"}`,
+      );
+    }
   };
 
   return (
