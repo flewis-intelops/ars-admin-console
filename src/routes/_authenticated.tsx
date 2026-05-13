@@ -6,7 +6,7 @@ import {
   useNavigate,
   useRouterState,
 } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ClassificationBanner } from "@/components/ars/primitives";
 import {
@@ -52,18 +52,31 @@ function AuthenticatedShell() {
     (async () => {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) return;
-      const [{ data: h }, { count }] = await Promise.all([
-        supabase.from("handlers").select("*").eq("user_id", userData.user.id).maybeSingle(),
-        supabase.from("sources_operational").select("*", { count: "exact", head: true }),
-      ]);
+      const { data: h } = await supabase
+        .from("handlers")
+        .select("*")
+        .eq("user_id", userData.user.id)
+        .maybeSingle();
       if (cancelled) return;
       setHandler((h ?? null) as Handler | null);
-      setSourcesCount(count ?? 0);
     })();
     return () => {
       cancelled = true;
     };
   }, []);
+
+  const loadSourcesCount = useCallback(async () => {
+    const { count } = await supabase
+      .from("sources_operational")
+      .select("*", { count: "exact", head: true });
+    setSourcesCount(count ?? 0);
+  }, []);
+
+  useEffect(() => {
+    loadSourcesCount();
+    const i = setInterval(loadSourcesCount, 5000);
+    return () => clearInterval(i);
+  }, [loadSourcesCount]);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
