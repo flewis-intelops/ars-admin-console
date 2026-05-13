@@ -107,7 +107,7 @@ function Dashboard() {
     <div className="space-y-6">
       {/* KPI strip */}
       <div className="grid grid-cols-5 gap-4">
-        <Kpi label="PENDING VALIDATION" value="9" delta="+3" tone="orange" />
+        <Kpi label="PENDING VALIDATION" value={String(pendingReports.length)} live />
         <Kpi label="PIR COVERAGE" value="62%" delta="+4%" />
         <Kpi label="ACTIVE SOURCES" value={String(sources.length)} live />
         <Kpi label="TIME-TO-REPORT" value="38m" delta="-6m" />
